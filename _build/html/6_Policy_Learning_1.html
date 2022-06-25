@@ -199,7 +199,7 @@ const thebe_selector_output = ".output, .cell_output"
             href="https://github.com/alexanderquispe/ml_ci_tutorial/issues/new?title=Issue%20on%20page%20%2F6_Policy_Learning_1.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        <a class="edit-button" href="https://github.com/alexanderquispe/ml_ci_tutorial/edit/main/Python_tutorials/6_Policy_Learning_1.ipynb"><button
+        <a class="edit-button" href="https://github.com/alexanderquispe/ml_ci_tutorial/edit/master/Python_tutorials/6_Policy_Learning_1.ipynb"><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
     </div>
@@ -219,7 +219,7 @@ const thebe_selector_output = ".output, .cell_output"
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/alexanderquispe/ml_ci_tutorial/main?urlpath=tree/Python_tutorials/6_Policy_Learning_1.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/alexanderquispe/ml_ci_tutorial/master?urlpath=tree/Python_tutorials/6_Policy_Learning_1.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="_static/images/logo_binder.svg"
@@ -227,7 +227,7 @@ const thebe_selector_output = ".output, .cell_output"
         
         
         
-        <a class="colab-button" href="https://colab.research.google.com/github/alexanderquispe/ml_ci_tutorial/blob/main/Python_tutorials/6_Policy_Learning_1.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+        <a class="colab-button" href="https://colab.research.google.com/github/alexanderquispe/ml_ci_tutorial/blob/master/Python_tutorials/6_Policy_Learning_1.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
                 title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
                     src="_static/images/logo_colab.png"
                     alt="Interact on Colab">Colab</button></a>
@@ -463,11 +463,11 @@ const thebe_selector_output = ".output, .cell_output"
 <div class="section" id="non-parametric-policies">
 <h2><span class="section-number">6.1. </span>Non-parametric policies<a class="headerlink" href="#non-parametric-policies" title="Permalink to this headline">¶</a></h2>
 <p>In the HTE chapter we define the conditional average treatment effect (CATE) function
-\begin{equation}
-\tag{6.1}
+\begin{equation} \label{cate}
+\tag{4.1}
 \tau(x) := \mathop{\mathrm{E}}[Y_i(1) - Y_i(0) | X_i = x],
 \end{equation}
-that is, the average effect of a binary treatment conditional on observable charateristics. If we knew &#64;ref(eq:cate), then a natural policy would be to assigns individuals to treatment their CATE is positive,</p>
+that is, the average effect of a binary treatment conditional on observable charateristics. If we knew \eqref{cate}, then a natural policy would be to assigns individuals to treatment their CATE is positive,</p>
 <p>\begin{equation}
 \tag{6.1}
 \pi^{*} = \mathbb{I}{\tau(x) \geq 0}.
@@ -477,7 +477,7 @@ that is, the average effect of a binary treatment conditional on observable char
 \tag{6.1}
 \pi^{*} = \mathbb{I}{\tau(x) \geq c(x)}.
 \end{equation}</p>
-<p>Of course, we don’t know &#64;ref(eq:cate). However, we can obtain an estimate <span class="math notranslate nohighlight">\(\widehat{\tau}(\cdot)\)</span> using any flexible (i.e., non-parametric) method as we learned in the HTE chapter, and then obtain a policy estimate</p>
+<p>Of course, we don’t know \eqref{cate}. However, we can obtain an estimate <span class="math notranslate nohighlight">\(\widehat{\tau}(\cdot)\)</span> using any flexible (i.e., non-parametric) method as we learned in the HTE chapter, and then obtain a policy estimate</p>
 <p>\begin{equation}
 \hat{\pi}(x) = \mathbb{I}{ \widehat{\tau}(x) \geq 0},
 \end{equation}</p>
@@ -714,29 +714,28 @@ that is, the average effect of a binary treatment conditional on observable char
 <h2><span class="section-number">6.2. </span>Parametric policies<a class="headerlink" href="#parametric-policies" title="Permalink to this headline">¶</a></h2>
 <p>In many settings, there are good reasons to constrain the policy to belong to a smaller function class <span class="math notranslate nohighlight">\(\pi\)</span>. The set <span class="math notranslate nohighlight">\(\pi\)</span> may contain only policies that, for example, are transparent and easy to explain to stakeholders, or that are easily implemented in the field. It may also be the case that the set of available policies <span class="math notranslate nohighlight">\(\pi\)</span> encodes other desirability criteria, such as satisfying certain budget constraints or depending only on a subset of observable characteristics.</p>
 <p>Estimating such a policy from data is finding an approximate solution to the following constrained maximization problem,</p>
-<p>\begin{equation}
+<p>\begin{equation} \label{param-pi-oracle}
 \tag{6.2}
 \pi^{*} = \arg\max_{\pi \in \Pi} \mathop{\mathrm{E}}[Y(\pi(X_i))].
 \end{equation}</p>
-<p>Following [Athey and Wager (2020, Econometrica)], we will use the following em\pirical counterpart of &#64;ref(eq:param-pi-oracle),</p>
-<p>\begin{equation}
-\tag{6.3}
-\hat{\pi}= \arg\min_{\pi \in \Pi} \frac{1}{n} \sum_{i=1}^{n} \widehat{\Gamma}_{i,\pi(X_i)},
+<p>Following [Athey and Wager (2020, Econometrica)], we will use the following em\pirical counterpart of \eqref{param-pi-oracle},</p>
+<p>\begin{equation} \label{param-pi-problem} \tag{6.3}
+\hat{\pi} = \arg\min_{\pi \in \Pi} \frac{1}{n} \sum_{i=1}^{n} \widehat{\Gamma}_{i,\pi(X_i)}
 \end{equation}</p>
 <p>where <span class="math notranslate nohighlight">\(\widehat{\Gamma}_{i,\pi(X_i)}\)</span> are AIPW scores as defined in the previous chapter. As reminder,
 \begin{equation}
 \widehat{\Gamma}<em>{i,\pi(X_i)} = \pi(X_i)\widehat{\Gamma}</em>{i,1} + (1 - \pi(X_i))\widehat{\Gamma}_{i,0},
 \end{equation}</p>
 <p>where</p>
-<p>\begin{align}
+<p>\begin{align} \label{aipw}
 \tag{3.10}
 \widehat{\Gamma}<em>{i,1}
 &amp;= \hat{\mu}^{-i}(X_i, 1) + \frac{W_i}{\hat{e}^{-i}(X_i)} \left(Y_i -\hat{\mu}^{-i}(X_i, 1)\right), \
 \widehat{\Gamma}</em>{i,0}
 &amp;= \hat{\mu}^{-i}(X_i, 0) . \frac{1-W_i}{1-\hat{e}^{-i}(X_i)} \left(Y_i -\hat{\mu}^{-i}(X_i, 0)\right).
 \end{align}</p>
-<p>Here we use shallow tree policies as our main example of parametric policies. The <code class="docutils literal notranslate"><span class="pre">R</span></code> package <code class="docutils literal notranslate"><span class="pre">policytree</span></code> to find a policy that solves &#64;ref(eq:param-pi-problem). In the example below, we’ll construct AIPW scores estimated using <code class="docutils literal notranslate"><span class="pre">grf</span></code>, though we could have used any other non-parametric method (with appropriate sample-splitting). See this short <a class="reference external" href="https://grf-labs.github.io/policytree/">tutorial</a> for other examples using these two packages.</p>
-<p>Let’s walk through an example for the data simulated above. The first step is to construct AIPW scores &#64;ref(eq:aipw).</p>
+<p>Here we use shallow tree policies as our main example of parametric policies. The <code class="docutils literal notranslate"><span class="pre">R</span></code> package <code class="docutils literal notranslate"><span class="pre">policytree</span></code> to find a policy that solves \eqref{param-pi-problem}. In the example below, we’ll construct AIPW scores estimated using <code class="docutils literal notranslate"><span class="pre">grf</span></code>, though we could have used any other non-parametric method (with appropriate sample-splitting). See this short <a class="reference external" href="https://grf-labs.github.io/policytree/">tutorial</a> for other examples using these two packages.</p>
+<p>Let’s walk through an example for the data simulated above. The first step is to construct AIPW scores \eqref{aipw}.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Randomized setting: pass the known treatment assignment as an argument.</span>
@@ -1416,19 +1415,19 @@ H_0: \mathop{\mathrm{E}}[X_{ij} | \hat{\pi}(X_i) = 1] = \mathop{\mathrm{E}}[X_{i
 <div class="section" id="topics-2-learning-with-uncertain-costs">
 <h2><span class="section-number">6.5. </span>Topics 2: Learning with uncertain costs<a class="headerlink" href="#topics-2-learning-with-uncertain-costs" title="Permalink to this headline">¶</a></h2>
 <p>In the previous section, treatment costs were known and (just for simplicity of exposition) fixed across covariate values. However, there are situations in which costs are unknown and must be learned from the data as well. In such situations, we may interested only in policies that do not exceed a certain budget  in expectation.</p>
-<p>Here, we follow <a class="reference external" href="https://arxiv.org/abs/2103.11066">Sun, Du, Wager (2021)</a> for how to deal with this issue. Their formulation is as follows. In potential outcome notation, each observation can be described by the tuple <span class="math notranslate nohighlight">\((X_i, Y_i(0), Y_i(1), C_i(0), C_i(1))\)</span>, where the new pair <span class="math notranslate nohighlight">\((C_i(0), C_i(1))\)</span> represents costs that would be realized if individuals were assigned to control or treatment. Of course, in the data we only observe the tuple <span class="math notranslate nohighlight">\((X_i, W_i, Y_i, C_i)\)</span>, where <span class="math notranslate nohighlight">\(C_i \equiv C_i(W_i)\)</span>. We are interested in approximating the policy <span class="math notranslate nohighlight">\(\\\pi_B^*\)</span> that maximizes the gain from treating relative to not treating anyone while kee\ping the average relative cost bounded by some known budget <span class="math notranslate nohighlight">\(B\)</span>,
-\begin{equation}
+<p>Here, we follow <a class="reference external" href="https://arxiv.org/abs/2103.11066">Sun, Du, Wager (2021)</a> for how to deal with this issue. Their formulation is as follows. In potential outcome notation, each observation can be described by the tuple <span class="math notranslate nohighlight">\((X_i, Y_i(0), Y_i(1), C_i(0), C_i(1))\)</span>, where the new pair <span class="math notranslate nohighlight">\((C_i(0), C_i(1))\)</span> represents costs that would be realized if individuals were assigned to control or treatment. Of course, in the data we only observe the tuple <span class="math notranslate nohighlight">\((X_i, W_i, Y_i, C_i)\)</span>, where <span class="math notranslate nohighlight">\(C_i \equiv C_i(W_i)\)</span>. We are interested in approximating the policy <span class="math notranslate nohighlight">\(\pi_B^*\)</span> that maximizes the gain from treating relative to not treating anyone while kee\ping the average relative cost bounded by some known budget <span class="math notranslate nohighlight">\(B\)</span>,</p>
+<p>\begin{equation}
 \pi_B^*(x) := \arg\max \mathop{\mathrm{E}}[Y(\pi(X_i))] - \mathop{\mathrm{E}}[Y_i(0)]  \quad \text{such that} \quad \mathop{\mathrm{E}}[C_i(\pi(X_i)) - C_i(0)] \leq B.
 \end{equation}</p>
 <p>This paper demonstrates that the optimal policy has the following structure. First, we can order observations in decreasing order according to the following priority ranking,</p>
   <!-- (\#eq:rho) -->
-<p>\begin{equation}
+<p>\begin{equation} \tag{6.4} \label{rho}
 \rho(x) :=
 \frac{\mathop{\mathrm{E}}[Y_i(1) - Y_i(0) | X_i = x]}
 {\mathop{\mathrm{E}}[C_i(1) - C_i(0) | X_i = x]}.
 \end{equation}</p>
-<p>Then, we assign treatment in decreasing order &#64;ref(eq:rho) until we either treat everyone with positive <span class="math notranslate nohighlight">\(\rho(x)\)</span> or the budget is met. The intuition is that individuals for which &#64;ref(eq:rho) is high have a high expected treatment effect relative to cost, so by assigning them first we obtain a cost-effective policy. We stop once there’s no one else for which treatment is expected to be positive or we run out of resources.</p>
-<p>To obtain estimates <span class="math notranslate nohighlight">\(\hat{\rho}\)</span> of &#64;ref(eq:rho) from the data, we have two options. The first is to estimate the numerator <span class="math notranslate nohighlight">\(\widehat{\tau}(x) = \mathop{\mathrm{E}}[Y_i(1) - Y_i(0) |X_i = x]\)</span> and the denominator <span class="math notranslate nohighlight">\(\hat{\widehat{\Gamma}}(x) = \mathop{\mathrm{E}}[C_i(1) - C_i(0) |X_i = x]\)</span> separately, in a manner analogous to what we saw in the HTE chapter, and compute their ratio, producing the estimate <span class="math notranslate nohighlight">\(\hat{\rho}(x) = \widehat{\tau}(x) / \hat{\widehat{\Gamma}}(x)\)</span>. We’ll see a second option below.</p>
+<p>Then, we assign treatment in decreasing order \eqref{rho} until we either treat everyone with positive <span class="math notranslate nohighlight">\(\rho(x)\)</span> or the budget is met. The intuition is that individuals for which \eqref{rho} is high have a high expected treatment effect relative to cost, so by assigning them first we obtain a cost-effective policy. We stop once there’s no one else for which treatment is expected to be positive or we run out of resources.</p>
+<p>To obtain estimates <span class="math notranslate nohighlight">\(\hat{\rho}\)</span> of \eqref{rho} from the data, we have two options. The first is to estimate the numerator <span class="math notranslate nohighlight">\(\widehat{\tau}(x) = \mathop{\mathrm{E}}[Y_i(1) - Y_i(0) |X_i = x]\)</span> and the denominator <span class="math notranslate nohighlight">\(\hat{\widehat{\Gamma}}(x) = \mathop{\mathrm{E}}[C_i(1) - C_i(0) |X_i = x]\)</span> separately, in a manner analogous to what we saw in the HTE chapter, and compute their ratio, producing the estimate <span class="math notranslate nohighlight">\(\hat{\rho}(x) = \widehat{\tau}(x) / \hat{\widehat{\Gamma}}(x)\)</span>. We’ll see a second option below.</p>
 <p>Let’s put the above into practice. For illustration, we will generate random costs for our data. We’ll assume that the costs of treatment are drawn from a conditionally Exponential distribution, and that there are no costs for no treating.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1442,7 +1441,7 @@ H_0: \mathop{\mathrm{E}}[X_{ij} | \hat{\pi}(X_i) = 1] = \mathop{\mathrm{E}}[X_{i
 </div>
 </div>
 </div>
-<p>The next snippet compares two kinds of policies. An “ignore costs” policy which, as the name suggests, orders individuals by <span class="math notranslate nohighlight">\(\hat{\tau}\)</span> only without taking costs into account; and the “ratio” policy in which the numerator and denominator of &#64;ref(eq:rho) are estimated separately. The comparison is made via a <strong>cost curve</strong> that compares the cumulative benefit of treatment with its cumulative cost (both normalized to 1), for all possible budgets at once. More cost-effective policies hug the left corner of the graph more tightly, kee\ping away from the 45-degree line.</p>
+<p>The next snippet compares two kinds of policies. An “ignore costs” policy which, as the name suggests, orders individuals by <span class="math notranslate nohighlight">\(\hat{\tau}\)</span> only without taking costs into account; and the “ratio” policy in which the numerator and denominator of (6.4) are estimated separately. The comparison is made via a <strong>cost curve</strong> that compares the cumulative benefit of treatment with its cumulative cost (both normalized to 1), for all possible budgets at once. More cost-effective policies hug the left corner of the graph more tightly, kee\ping away from the 45-degree line.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assuming that the assignment probability is known.</span>
@@ -1532,18 +1531,17 @@ H_0: \mathop{\mathrm{E}}[X_{ij} | \hat{\pi}(X_i) = 1] = \mathop{\mathrm{E}}[X_{i
 </div>
 </div>
 <p>To read this graph, we consider a point on the horizontal axis, representing a possible (normalized) budget constraint. At that point, whichever policy is higher is more cost-effective.</p>
-<p>As the authors note, we can also estimate &#64;ref(eq:rho) in a second way. First, they note that, under overlap and the following extended unconfoudedness assumption
-\begin{equation}
+<p>As the authors note, we can also estimate (6.4) in a second way. First, they note that, under overlap and the following extended unconfoudedness assumption</p>
+<p>\begin{equation}
 {Y_i(0), Y_i(1), C_i(1), C_i(0) \perp W_i | X_i },
 \end{equation}
-we can rewrite &#64;ref(eq:rho) as</p>
-  <!-- (\#eq:rho-iv) -->
-<p>\begin{equation}
+we can rewrite (6.4) as</p>
+<p>\begin{equation} \label{rho-iv} \tag{6.5}
 \rho(x) :=
 \frac{\text{Cov}[Y_i, W_i | X_i = x]}
 {\text{Cov}[C_i, W_i | X_i = x]}.
 \end{equation}</p>
-<p>As readers with a little more background in causal inference may note, &#64;ref(eq:rho-iv) coincides with the definition of the conditional local average treatment effect (LATE) if we <em>were</em> to take <span class="math notranslate nohighlight">\(C_i\)</span> as an “instrumental variable”. In fact, instrumental variable methods require different assumptions, so the connection with instrumental variables is tenuous (see the paper for details), but mechanically &#64;ref(eq:rho-iv) provides us with an estimation procedure: we can use any method used to estimate conditional LATE to produce an estimate <span class="math notranslate nohighlight">\(\hat{\rho}\)</span>.</p>
+<p>As readers with a little more background in causal inference may note, \eqref{rho-iv} coincides with the definition of the conditional local average treatment effect (LATE) if we <em>were</em> to take <span class="math notranslate nohighlight">\(W_i\)</span> as an “instrumental variable” and <span class="math notranslate nohighlight">\(C_i\)</span> as the “treatment”. In fact, instrumental variable methods require different assumptions, so the connection with instrumental variables is tenuous (see the paper for details), but mechanically \eqref{rho-iv} provides us with an estimation procedure: we can use any method used to estimate conditional LATE to produce an estimate <span class="math notranslate nohighlight">\(\hat{\rho}\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimating rho(x) directly via instrumental forests.</span>
@@ -1678,7 +1676,7 @@ we can rewrite &#64;ref(eq:rho) as</p>
         requestKernel: true,
         binderOptions: {
             repo: "alexanderquispe/ml_ci_tutorial",
-            ref: "main",
+            ref: "master",
         },
         codeMirrorConfig: {
             theme: "abcdef",

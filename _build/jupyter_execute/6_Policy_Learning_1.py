@@ -64,11 +64,11 @@ data.head(4)
 # ## Non-parametric policies
 # 
 # In the HTE chapter we define the conditional average treatment effect (CATE) function
-# \begin{equation}
-#   \tag{6.1}
+# \begin{equation} \label{cate}
+#   \tag{4.1}
 #   \tau(x) := \mathop{\mathrm{E}}[Y_i(1) - Y_i(0) | X_i = x],
 # \end{equation}
-# that is, the average effect of a binary treatment conditional on observable charateristics. If we knew \@ref(eq:cate), then a natural policy would be to assigns individuals to treatment their CATE is positive,
+# that is, the average effect of a binary treatment conditional on observable charateristics. If we knew \eqref{cate}, then a natural policy would be to assigns individuals to treatment their CATE is positive,
 # 
 # \begin{equation}
 #   \tag{6.1}
@@ -82,7 +82,7 @@ data.head(4)
 #   \pi^{*} = \mathbb{I}\{\tau(x) \geq c(x)\}.
 # \end{equation}
 # 
-# Of course, we don't know \@ref(eq:cate). However, we can obtain an estimate $\widehat{\tau}(\cdot)$ using any flexible (i.e., non-parametric) method as we learned in the HTE chapter, and then obtain a policy estimate
+# Of course, we don't know \eqref{cate}. However, we can obtain an estimate $\widehat{\tau}(\cdot)$ using any flexible (i.e., non-parametric) method as we learned in the HTE chapter, and then obtain a policy estimate
 # 
 # \begin{equation}
 #   \hat{\pi}(x) = \mathbb{I}\{ \widehat{\tau}(x) \geq 0\},
@@ -315,28 +315,27 @@ np.mean(gamma_hat_pi), np.std(gamma_hat_pi)/ np.sqrt(len(gamma_hat_pi))
 # 
 # Estimating such a policy from data is finding an approximate solution to the following constrained maximization problem,
 # 
-# \begin{equation}
+# \begin{equation} \label{param-pi-oracle}
 #   \tag{6.2}
 #   \pi^{*} = \arg\max_{\pi \in \Pi} \mathop{\mathrm{E}}[Y(\pi(X_i))].
 # \end{equation}
 # 
 # 
-# Following [Athey and Wager (2020, Econometrica)], we will use the following em\\pirical counterpart of \@ref(eq:param-pi-oracle),
+# Following [Athey and Wager (2020, Econometrica)], we will use the following em\\pirical counterpart of \eqref{param-pi-oracle},
 # 
-# \begin{equation}
-#   \tag{6.3}
-#   \hat{\pi}= \arg\min_{\pi \in \Pi} \frac{1}{n} \sum_{i=1}^{n} \widehat{\Gamma}_{i,\pi(X_i)},
+# \begin{equation} \label{param-pi-problem} \tag{6.3}
+#   \hat{\pi} = \arg\min_{\pi \in \Pi} \frac{1}{n} \sum_{i=1}^{n} \widehat{\Gamma}_{i,\pi(X_i)}
 # \end{equation}
 # 
 # where $\widehat{\Gamma}_{i,\pi(X_i)}$ are AIPW scores as defined in the previous chapter. As reminder, 
-# \begin{equation}
+# \begin{equation} 
 #   \widehat{\Gamma}_{i,\pi(X_i)} = \pi(X_i)\widehat{\Gamma}_{i,1} + (1 - \pi(X_i))\widehat{\Gamma}_{i,0},
 # \end{equation}
 # 
 # 
 # where
 # 
-# \begin{align}
+# \begin{align} \label{aipw}
 #     \tag{3.10}
 #     \widehat{\Gamma}_{i,1} 
 #     &= \hat{\mu}^{-i}(X_i, 1) + \frac{W_i}{\hat{e}^{-i}(X_i)} \left(Y_i -\hat{\mu}^{-i}(X_i, 1)\right), \\
@@ -344,9 +343,9 @@ np.mean(gamma_hat_pi), np.std(gamma_hat_pi)/ np.sqrt(len(gamma_hat_pi))
 #     &= \hat{\mu}^{-i}(X_i, 0) . \frac{1-W_i}{1-\hat{e}^{-i}(X_i)} \left(Y_i -\hat{\mu}^{-i}(X_i, 0)\right).
 # \end{align}
 # 
-# Here we use shallow tree policies as our main example of parametric policies. The `R` package `policytree` to find a policy that solves \@ref(eq:param-pi-problem). In the example below, we'll construct AIPW scores estimated using `grf`, though we could have used any other non-parametric method (with appropriate sample-splitting). See this short [tutorial](https://grf-labs.github.io/policytree/) for other examples using these two packages.
+# Here we use shallow tree policies as our main example of parametric policies. The `R` package `policytree` to find a policy that solves \eqref{param-pi-problem}. In the example below, we'll construct AIPW scores estimated using `grf`, though we could have used any other non-parametric method (with appropriate sample-splitting). See this short [tutorial](https://grf-labs.github.io/policytree/) for other examples using these two packages.
 # 
-# Let's walk through an example for the data simulated above. The first step is to construct AIPW scores \@ref(eq:aipw). 
+# Let's walk through an example for the data simulated above. The first step is to construct AIPW scores \eqref{aipw}. 
 # 
 
 # In[12]:
@@ -737,7 +736,8 @@ plt.title("Average covariate values within each leaf")
 # 
 # In the previous section, treatment costs were known and (just for simplicity of exposition) fixed across covariate values. However, there are situations in which costs are unknown and must be learned from the data as well. In such situations, we may interested only in policies that do not exceed a certain budget  in expectation.
 # 
-# Here, we follow [Sun, Du, Wager (2021)](https://arxiv.org/abs/2103.11066) for how to deal with this issue. Their formulation is as follows. In potential outcome notation, each observation can be described by the tuple $(X_i, Y_i(0), Y_i(1), C_i(0), C_i(1))$, where the new pair $(C_i(0), C_i(1))$ represents costs that would be realized if individuals were assigned to control or treatment. Of course, in the data we only observe the tuple $(X_i, W_i, Y_i, C_i)$, where $C_i \equiv C_i(W_i)$. We are interested in approximating the policy $\\\pi_B^*$ that maximizes the gain from treating relative to not treating anyone while kee\\ping the average relative cost bounded by some known budget $B$,
+# Here, we follow [Sun, Du, Wager (2021)](https://arxiv.org/abs/2103.11066) for how to deal with this issue. Their formulation is as follows. In potential outcome notation, each observation can be described by the tuple $(X_i, Y_i(0), Y_i(1), C_i(0), C_i(1))$, where the new pair $(C_i(0), C_i(1))$ represents costs that would be realized if individuals were assigned to control or treatment. Of course, in the data we only observe the tuple $(X_i, W_i, Y_i, C_i)$, where $C_i \equiv C_i(W_i)$. We are interested in approximating the policy $\pi_B^*$ that maximizes the gain from treating relative to not treating anyone while kee\\ping the average relative cost bounded by some known budget $B$,
+# 
 # \begin{equation}
 #   \\\pi_B^*(x) := \arg\max \mathop{\mathrm{E}}[Y(\pi(X_i))] - \mathop{\mathrm{E}}[Y_i(0)]  \quad \text{such that} \quad \mathop{\mathrm{E}}[C_i(\pi(X_i)) - C_i(0)] \leq B.
 # \end{equation}
@@ -745,15 +745,15 @@ plt.title("Average covariate values within each leaf")
 # This paper demonstrates that the optimal policy has the following structure. First, we can order observations in decreasing order according to the following priority ranking,
 #   <!-- (\#eq:rho) -->
 # 
-# \begin{equation}
+# \begin{equation} \tag{6.4} \label{rho}
 #   \rho(x) := 
 #     \frac{\mathop{\mathrm{E}}[Y_i(1) - Y_i(0) | X_i = x]}
 #          {\mathop{\mathrm{E}}[C_i(1) - C_i(0) | X_i = x]}.
 # \end{equation}
 # 
-# Then, we assign treatment in decreasing order \@ref(eq:rho) until we either treat everyone with positive $\rho(x)$ or the budget is met. The intuition is that individuals for which \@ref(eq:rho) is high have a high expected treatment effect relative to cost, so by assigning them first we obtain a cost-effective policy. We stop once there's no one else for which treatment is expected to be positive or we run out of resources.
+# Then, we assign treatment in decreasing order \eqref{rho} until we either treat everyone with positive $\rho(x)$ or the budget is met. The intuition is that individuals for which \eqref{rho} is high have a high expected treatment effect relative to cost, so by assigning them first we obtain a cost-effective policy. We stop once there's no one else for which treatment is expected to be positive or we run out of resources.
 # 
-# To obtain estimates $\hat{\rho}$ of \@ref(eq:rho) from the data, we have two options. The first is to estimate the numerator $\widehat{\tau}(x) = \mathop{\mathrm{E}}[Y_i(1) - Y_i(0) |X_i = x]$ and the denominator $\hat{\widehat{\Gamma}}(x) = \mathop{\mathrm{E}}[C_i(1) - C_i(0) |X_i = x]$ separately, in a manner analogous to what we saw in the HTE chapter, and compute their ratio, producing the estimate $\hat{\rho}(x) = \widehat{\tau}(x) / \hat{\widehat{\Gamma}}(x)$. We'll see a second option below. 
+# To obtain estimates $\hat{\rho}$ of \eqref{rho} from the data, we have two options. The first is to estimate the numerator $\widehat{\tau}(x) = \mathop{\mathrm{E}}[Y_i(1) - Y_i(0) |X_i = x]$ and the denominator $\hat{\widehat{\Gamma}}(x) = \mathop{\mathrm{E}}[C_i(1) - C_i(0) |X_i = x]$ separately, in a manner analogous to what we saw in the HTE chapter, and compute their ratio, producing the estimate $\hat{\rho}(x) = \widehat{\tau}(x) / \hat{\widehat{\Gamma}}(x)$. We'll see a second option below. 
 # 
 # Let's put the above into practice. For illustration, we will generate random costs for our data. We'll assume that the costs of treatment are drawn from a conditionally Exponential distribution, and that there are no costs for no treating.
 # 
@@ -769,7 +769,7 @@ do_it = [np.random.uniform(0, 1, 1)]
 data['cost'] = C = np.select(cond, do_it, 0)
 
 
-# The next snippet compares two kinds of policies. An "ignore costs" policy which, as the name suggests, orders individuals by $\hat{\tau}$ only without taking costs into account; and the "ratio" policy in which the numerator and denominator of \@ref(eq:rho) are estimated separately. The comparison is made via a **cost curve** that compares the cumulative benefit of treatment with its cumulative cost (both normalized to 1), for all possible budgets at once. More cost-effective policies hug the left corner of the graph more tightly, kee\\ping away from the 45-degree line.
+# The next snippet compares two kinds of policies. An "ignore costs" policy which, as the name suggests, orders individuals by $\hat{\tau}$ only without taking costs into account; and the "ratio" policy in which the numerator and denominator of (6.4) are estimated separately. The comparison is made via a **cost curve** that compares the cumulative benefit of treatment with its cumulative cost (both normalized to 1), for all possible budgets at once. More cost-effective policies hug the left corner of the graph more tightly, kee\\ping away from the 45-degree line.
 # 
 # 
 
@@ -855,21 +855,20 @@ plt.show()
 
 # To read this graph, we consider a point on the horizontal axis, representing a possible (normalized) budget constraint. At that point, whichever policy is higher is more cost-effective.
 # 
-# As the authors note, we can also estimate \@ref(eq:rho) in a second way. First, they note that, under overlap and the following extended unconfoudedness assumption
+# As the authors note, we can also estimate (6.4) in a second way. First, they note that, under overlap and the following extended unconfoudedness assumption
+# 
 # \begin{equation}
 #   \{Y_i(0), Y_i(1), C_i(1), C_i(0) \perp W_i | X_i \},
 # \end{equation}
-# we can rewrite \@ref(eq:rho) as
+# we can rewrite (6.4) as
 # 
-#   <!-- (\#eq:rho-iv) -->
-# 
-# \begin{equation}
+# \begin{equation} \label{rho-iv} \tag{6.5}
 #   \rho(x) := 
 #     \frac{\text{Cov}[Y_i, W_i | X_i = x]}
 #          {\text{Cov}[C_i, W_i | X_i = x]}.
 # \end{equation}
 # 
-# As readers with a little more background in causal inference may note, \@ref(eq:rho-iv) coincides with the definition of the conditional local average treatment effect (LATE) if we _were_ to take $C_i$ as an "instrumental variable". In fact, instrumental variable methods require different assumptions, so the connection with instrumental variables is tenuous (see the paper for details), but mechanically \@ref(eq:rho-iv) provides us with an estimation procedure: we can use any method used to estimate conditional LATE to produce an estimate $\hat{\rho}$.
+# As readers with a little more background in causal inference may note, \eqref{rho-iv} coincides with the definition of the conditional local average treatment effect (LATE) if we _were_ to take $W_i$ as an "instrumental variable" and $C_i$ as the "treatment". In fact, instrumental variable methods require different assumptions, so the connection with instrumental variables is tenuous (see the paper for details), but mechanically \eqref{rho-iv} provides us with an estimation procedure: we can use any method used to estimate conditional LATE to produce an estimate $\hat{\rho}$.
 # 
 
 # In[37]:

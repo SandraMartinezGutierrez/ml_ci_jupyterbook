@@ -200,7 +200,7 @@ const thebe_selector_output = ".output, .cell_output"
             href="https://github.com/alexanderquispe/ml_ci_tutorial/issues/new?title=Issue%20on%20page%20%2F4_heterogeneous_treatment_effect_1.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        <a class="edit-button" href="https://github.com/alexanderquispe/ml_ci_tutorial/edit/main/Python_tutorials/4_heterogeneous_treatment_effect_1.ipynb"><button
+        <a class="edit-button" href="https://github.com/alexanderquispe/ml_ci_tutorial/edit/master/Python_tutorials/4_heterogeneous_treatment_effect_1.ipynb"><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
     </div>
@@ -220,7 +220,7 @@ const thebe_selector_output = ".output, .cell_output"
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/alexanderquispe/ml_ci_tutorial/main?urlpath=tree/Python_tutorials/4_heterogeneous_treatment_effect_1.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/alexanderquispe/ml_ci_tutorial/master?urlpath=tree/Python_tutorials/4_heterogeneous_treatment_effect_1.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="_static/images/logo_binder.svg"
@@ -228,7 +228,7 @@ const thebe_selector_output = ".output, .cell_output"
         
         
         
-        <a class="colab-button" href="https://colab.research.google.com/github/alexanderquispe/ml_ci_tutorial/blob/main/Python_tutorials/4_heterogeneous_treatment_effect_1.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+        <a class="colab-button" href="https://colab.research.google.com/github/alexanderquispe/ml_ci_tutorial/blob/master/Python_tutorials/4_heterogeneous_treatment_effect_1.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
                 title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
                     src="_static/images/logo_colab.png"
                     alt="Interact on Colab">Colab</button></a>
@@ -406,18 +406,16 @@ const thebe_selector_output = ".output, .cell_output"
 <div class="tex2jax_ignore mathjax_ignore section" id="hte-i-binary-treatment">
 <h1><span class="section-number">4. </span>HTE I: Binary treatment<a class="headerlink" href="#hte-i-binary-treatment" title="Permalink to this headline">¶</a></h1>
 <p>Source RMD file: <a class="reference external" href="https://docs.google.com/uc?export=download&amp;id=1FSUi4WLfYYKnvWsNWypiQORhkqf5IlFP">link</a></p>
-<p>In the previous chapter, we learned how to estimate the effect of a binary treatment averaged over the entire population. However, the average may obscure important details about how different individuals react to the treatment. In this chapter, we will learn how to estimate the <strong>conditional average treatment effect (CATE)</strong>,
-\begin{equation}
-(#eq:cate)
-\tau(x) := \E[Y_i(1) - Y_i(0) | X_i = x],
+<p>In the previous chapter, we learned how to estimate the effect of a binary treatment averaged over the entire population. However, the average may obscure important details about how different individuals react to the treatment. In this chapter, we will learn how to estimate the <strong>conditional average treatment effect (CATE)</strong>,</p>
+<p>\begin{equation} \label{cate}  \tag{4.1}
+\tau(x) := \mathbf{E}[Y_i(1) - Y_i(0) | X_i = x],
 \end{equation}
 which is a “localized” version of the average treatment effect conditional on a vector of observable characteristics.</p>
-<p>It’s often the case that &#64;ref(eq:cate) is too general to be immediately useful, especially when the observable covariates are high-dimensional. It can be hard to estimate reliably without making strong modeling assumptions, and hard to summarize in a useful manner after estimation. In such situations, we will instead try to estimate treatment effect averages for simpler groups
-\begin{equation}
-(#eq:cate-g)
-\E[Y_i(1) - Y_i(0) | G_i = g],
+<p>It’s often the case that \eqref{cate} is too general to be immediately useful, especially when the observable covariates are high-dimensional. It can be hard to estimate reliably without making strong modeling assumptions, and hard to summarize in a useful manner after estimation. In such situations, we will instead try to estimate treatment effect averages for simpler groups
+\begin{equation} \label{cate-g} \tag{4.2}
+\mathbf{E}[Y_i(1) - Y_i(0) | G_i = g],
 \end{equation}
-where <span class="math notranslate nohighlight">\(G_i\)</span> indexes subgroups of interest. Below you’ll learn how to estimate and test hypotheses about pre-defined subgroups, and also how to discover subgroups of interest from the data. In this tutorial, you will learn how to use estimates of &#64;ref(eq:cate) to suggest relevant subgroups <span class="math notranslate nohighlight">\(G_i\)</span> (and in the next chapters you will find out other uses of &#64;ref(eq:cate) in policy learning and evaluation).</p>
+where <span class="math notranslate nohighlight">\(G_i\)</span> indexes subgroups of interest. Below you’ll learn how to estimate and test hypotheses about pre-defined subgroups, and also how to discover subgroups of interest from the data. In this tutorial, you will learn how to use estimates of \eqref{cate} to suggest relevant subgroups <span class="math notranslate nohighlight">\(G_i\)</span> (and in the next chapters you will find out other uses of \eqref{cate} in policy learning and evaluation).</p>
 <p>We’ll continue using the abridged version of the General Social Survey (GSS) <a class="reference external" href="https://gss.norc.org/Documents/reports/project-reports/GSSProject%20report32.pdf">(Smith, 2016)</a> dataset that was introduced in the previous chapter. In this dataset, individuals were sent to treatment or control with equal probability, so we are in a randomized setting. However, many of the techniques and code shown below should also work in an observational setting provided that unconfoundedness and overlap are satisfied (these assumptions were defined in the previous chapter).</p>
 <p>As with other chapters in this tutorial, the code below should still work by replacing the next snippet of code with a different dataset, provided that you update the key variables <code class="docutils literal notranslate"><span class="pre">treatment</span></code>, <code class="docutils literal notranslate"><span class="pre">outcome</span></code>, and <code class="docutils literal notranslate"><span class="pre">covariates</span></code> below. Also, please make sure to read the comments as they may be subtle differences depending on whether your dataset was created in a randomized or observational setting.</p>
 <div class="cell docutils container">
@@ -440,32 +438,29 @@ where <span class="math notranslate nohighlight">\(G_i\)</span> indexes subgroup
 </div>
 <div class="section" id="pre-specified-hypotheses">
 <h2><span class="section-number">4.1. </span>Pre-specified hypotheses<a class="headerlink" href="#pre-specified-hypotheses" title="Permalink to this headline">¶</a></h2>
-<p>We will begin by learning how to test pre-specified null hypotheses of the form
-\begin{equation}
-(#eq:hte-hyp)
-H_{0}: \E[Y(1) - Y(0) | G_i = 1] = \E[Y(1) - Y(0) | G_i = 0].
+<p>We will begin by learning how to test pre-specified null hypotheses of the form</p>
+<p>\begin{equation} \label{hte-hyp} \tag{4.3}
+H_{0}: \mathbf{E}[Y(1) - Y(0) | G_i = 1] = \mathbf{E}[Y(1) - Y(0) | G_i = 0].
 \end{equation}</p>
 <p>That is, that the treatment effect is the same regardless of membership to some group
 <span class="math notranslate nohighlight">\(G_i\)</span>. Importantly, for now we’ll assume that the group <span class="math notranslate nohighlight">\(G_i\)</span> was <strong>pre-specified</strong> – it was decided <em>before</em> looking at the data.</p>
-<p>In a randomized setting, if the both the treatment  <span class="math notranslate nohighlight">\(W_i\)</span> and group membership <span class="math notranslate nohighlight">\(G_i\)</span> are binary, we can write
-\begin{equation}
-(#eq:linear)
-\E[Y_i(W_i)|G_i] = \E[Y_i|W_i, G_i] = \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i
+<p>In a randomized setting, if the both the treatment  <span class="math notranslate nohighlight">\(W_i\)</span> and group membership <span class="math notranslate nohighlight">\(G_i\)</span> are binary, we can write</p>
+<p>\begin{equation} \label{linear} \tag{4.4}
+\mathbf{E}[Y_i(W_i)|G_i] = \mathbf{E}[Y_i|W_i, G_i] = \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i
 \end{equation}</p>
 <font size=1>
 When $W_i$ and $G_i$ are binary, this decomposition is true without loss of generality. Why?
 </font>
-<p>This allows us to write the average effects of <span class="math notranslate nohighlight">\(W_i\)</span> and <span class="math notranslate nohighlight">\(G_i\)</span> on <span class="math notranslate nohighlight">\(Y_i\)</span> as
-\begin{equation}
-(#eq:decomp)
+<p>This allows us to write the average effects of <span class="math notranslate nohighlight">\(W_i\)</span> and <span class="math notranslate nohighlight">\(G_i\)</span> on <span class="math notranslate nohighlight">\(Y_i\)</span> as</p>
+<p>\begin{equation} \label{decomp} \tag{4.5}
 \begin{aligned}
-\E[Y(1) | G_i=1] &amp;= \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i, \
-\E[Y(1) | G_i=0] &amp;= \beta_0 + \beta_w W_i,  \
-\E[Y(0) | G_i=1] &amp;= \beta_0 + \beta_g G_i,  \
-\E[Y(0) | G_i=0] &amp;= \beta_0.
+\mathbf{E}[Y(1) | G_i=1] &amp;= \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i, \
+\mathbf{E}[Y(1) | G_i=0] &amp;= \beta_0 + \beta_w W_i,  \
+\mathbf{E}[Y(0) | G_i=1] &amp;= \beta_0 + \beta_g G_i,  \
+\mathbf{E}[Y(0) | G_i=0] &amp;= \beta_0.
 \end{aligned}
 \end{equation}</p>
-<p>Rewriting the null hypothesis &#64;ref(eq:hte-hyp) in terms of the decomposition &#64;ref(eq:decomp), we see that it boils down to a test about the coefficient in the interaction: <span class="math notranslate nohighlight">\(\beta_{xw} = 0\)</span>. Here’s an example that tests whether the treatment effect is the same for “conservative” (<code class="docutils literal notranslate"><span class="pre">polviews</span></code> &lt; 4) and “liberal” (<code class="docutils literal notranslate"><span class="pre">polviews</span></code> <span class="math notranslate nohighlight">\(\geq\)</span> 4) individuals.</p>
+<p>Rewriting the null hypothesis \eqref{hte-hyp} in terms of the decomposition \eqref{decomp}, we see that it boils down to a test about the coefficient in the interaction: <span class="math notranslate nohighlight">\(\beta_{xw} = 0\)</span>. Here’s an example that tests whether the treatment effect is the same for “conservative” (<code class="docutils literal notranslate"><span class="pre">polviews</span></code> &lt; 4) and “liberal” (<code class="docutils literal notranslate"><span class="pre">polviews</span></code> <span class="math notranslate nohighlight">\(\geq\)</span> 4) individuals.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Only valid in randomized settings</span>
@@ -501,10 +496,9 @@ w:conservative     0.1160      0.010     11.185      0.000       0.096       0.1
 <font size=1>
 Interpret the results above. The coefficient $\beta_{xw}$ is denoted by `w:conservativeTRUE`. Can we detect a difference in treatment effect for conservative vs liberal individuals? For whom is the effect larger?
 </font>
-<p>Sometimes there are many subgroups, leading to multiple hypotheses such as
-\begin{equation}
-(#eq:mult-hyp)
-H_0: \E[Y(1) - Y(0) \ | \  G_i = 1] = \E[Y(1) - Y(0) \ | \  G_i = g]
+<p>Sometimes there are many subgroups, leading to multiple hypotheses such as</p>
+<p>\begin{equation} \label{mult-hyp} \tag{4.6}
+H_0: \mathbf{E}[Y(1) - Y(0) \ | \  G_i = 1] = \mathbf{E}[Y(1) - Y(0) \ | \  G_i = g]
 \qquad
 \text{for many values of }g.
 \end{equation}</p>
@@ -896,14 +890,14 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 Compare the adjusted p-values under Romano-Wolf with those obtained via Bonferroni above.
 </font>
 <p>The Bonferroni and Romano-Wolf methods control the <strong>familywise error rate (FWER)</strong>, which is the (asymptotic) probability of rejecting even one true null hypothesis. In other words, for a significance level <span class="math notranslate nohighlight">\(\alpha\)</span>, they guarantee that with probability <span class="math notranslate nohighlight">\(1 - \alpha\)</span> we will make zero false discoveries. However, when the number of hypotheses being tested is very large, this criterion may be so stringent that it prevents us from being able to detect real effects. Instead, there exist alternative procedures that control the (asymptotic) <strong>false discovery rate (FDR)</strong>, defined as the expected proportion of true null hypotheses rejected among all hypotheses rejected. One such procedure is the Benjamini-Hochberg procedure, which is available in base R via <code class="docutils literal notranslate"><span class="pre">p.adjust(...,</span> <span class="pre">method=&quot;BH&quot;)</span></code>. For what remains we’ll stick with FWER control, but keep in mind that FDR control can also useful in exploratory analyses or settings in which there’s a very large number of hypotheses under consideration.</p>
-<p>As in the previous chapter, when working with observational data under unconfoundedness and overlap, one can use AIPW scores  <span class="math notranslate nohighlight">\(\hGamma_i\)</span> in place of the raw outcomes  <span class="math notranslate nohighlight">\(Y_i\)</span>. In the next snippet, we construct AIPW scores using the <code class="docutils literal notranslate"><span class="pre">causal_forest</span></code> function from the <code class="docutils literal notranslate"><span class="pre">grf</span></code> package.</p>
+<p>As in the previous chapter, when working with observational data under unconfoundedness and overlap, one can use AIPW scores  <span class="math notranslate nohighlight">\(\hat{\Gamma}_i\)</span> in place of the raw outcomes  <span class="math notranslate nohighlight">\(Y_i\)</span>. In the next snippet, we construct AIPW scores using the <code class="docutils literal notranslate"><span class="pre">causal_forest</span></code> function from the <code class="docutils literal notranslate"><span class="pre">grf</span></code> package.</p>
 </div>
 <div class="section" id="data-driven-hypotheses">
 <h2><span class="section-number">4.2. </span>Data-driven hypotheses<a class="headerlink" href="#data-driven-hypotheses" title="Permalink to this headline">¶</a></h2>
 <p>Pre-specifying hypotheses prior to looking at the data is in general good practice to avoid “p-hacking” (e.g., slicing the data into different subgroups until a significant result is found). However, valid tests can also be attained if by <strong>sample splitting</strong>: we can use a subset of the sample to find promising subgroups, then test hypotheses about these subgroups in the remaining sample. This kind of sample splitting for hypothesis testing is called <strong>honesty</strong>.</p>
 <div class="section" id="via-causal-trees">
 <h3><span class="section-number">4.2.1. </span>Via causal trees<a class="headerlink" href="#via-causal-trees" title="Permalink to this headline">¶</a></h3>
-<p><strong>Causal trees</strong> [(Athey and Imbens)](PNAS, 2016)](<a class="reference external" href="https://www.pnas.org/content/pnas/113/27/7353.full.pdf">https://www.pnas.org/content/pnas/113/27/7353.full.pdf</a>) are an intuitive algorithm that is available in the randomized setting to discover subgroups with different treatment effects.</p>
+<p><strong>Causal trees</strong> <a class="reference external" href="https://www.pnas.org/content/pnas/113/27/7353.full.pdf">(Athey and Imbens)(PNAS, 2016)</a> are an intuitive algorithm that is available in the randomized setting to discover subgroups with different treatment effects.</p>
 <p>At a high level, the idea is to divide the sample into three subsets (not necessarily of equal size). The <code class="docutils literal notranslate"><span class="pre">splitting</span></code> subset is used to fit a decision tree whose objective is modified to maximize heterogeneity in treatment effect estimates across leaves. The <code class="docutils literal notranslate"><span class="pre">estimation</span></code> subset is then used to produce a valid estimate of the treatment effect at each leaf of the fitted tree. Finally, a <code class="docutils literal notranslate"><span class="pre">test</span></code> subset can be used to validate the tree estimates.</p>
 <p>The next snippet uses <code class="docutils literal notranslate"><span class="pre">honest.causalTree</span></code> function from the <a class="reference external" href="https://github.com/susanathey/causalTree"><code class="docutils literal notranslate"><span class="pre">causalTree</span></code></a> package. For more details, see the <a class="reference external" href="https://github.com/susanathey/causalTree/blob/master/briefintro.pdf">causalTree documentation</a>.</p>
 <div class="cell docutils container">
@@ -1315,6 +1309,7 @@ C:\Users\Roberto\anaconda3\lib\site-packages\numpy\core\_methods.py:254: Runtime
 </div>
 </div>
 </div>
+<p>The next snippet computes the average treatment effect within each group defined above, i.e.,  <span class="math notranslate nohighlight">\(\mathbf{E}[Y_{i}(0)|G_{i} = g]\)</span>. This can done in two ways. First, by computing a simple difference-in-means estimate of the ATE based on observations within each group. This is valid only in randomized settings.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Valid randomized data and observational data with unconfoundedness+overlap.</span>
@@ -1455,6 +1450,7 @@ C:\Users\Roberto\anaconda3\lib\site-packages\numpy\core\_methods.py:254: Runtime
 </table>
 </div></div></div>
 </div>
+<p>Another option is to average the AIPW scores within each group. This valid for both randomized settings and observational settings with unconfoundedness and overlap. Moreover, AIPW-based estimators should produce estimates with tighter confidence intervals in large samples.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Computing AIPW scores.</span>
@@ -1557,6 +1553,7 @@ C:\Users\Roberto\anaconda3\lib\site-packages\numpy\core\_methods.py:254: Runtime
 </table>
 </div></div></div>
 </div>
+<p>The code below plots the estimates.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Concatenate the two results.</span>
@@ -1601,7 +1598,7 @@ C:\Users\Roberto\anaconda3\lib\site-packages\numpy\core\_methods.py:254: Runtime
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/4_heterogeneous_treatment_effect_1_41_0.png" src="_images/4_heterogeneous_treatment_effect_1_41_0.png" />
+<img alt="_images/4_heterogeneous_treatment_effect_1_44_0.png" src="_images/4_heterogeneous_treatment_effect_1_44_0.png" />
 </div>
 </div>
 <p>When there isn’t much detectable heterogeneity, the plot above can end up being non-monotonic. This can mean that the number of observations is too small for us to be able to detect subgroups with relevant differences in treatment effect.</p>
@@ -1814,6 +1811,7 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </table>
 </div></div></div>
 </div>
+<p>Finally, we can also check if different groups have different average covariate levels across rankings.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
@@ -1883,9 +1881,10 @@ The frame.append method is deprecated and will be removed from pandas in a futur
  Text(4.5, 0, &#39;Q5&#39;)]
 </pre></div>
 </div>
-<img alt="_images/4_heterogeneous_treatment_effect_1_46_2.png" src="_images/4_heterogeneous_treatment_effect_1_46_2.png" />
+<img alt="_images/4_heterogeneous_treatment_effect_1_50_2.png" src="_images/4_heterogeneous_treatment_effect_1_50_2.png" />
 </div>
 </div>
+<p>Interpret the heatmap above. What describes the subgroups with strongest and weakest estimated treatment effect? Are there variables that seem to increase or decrease monotonically across rankings?</p>
 </div>
 <div class="section" id="best-linear-projection">
 <h4><span class="section-number">4.2.1.3. </span>Best linear projection<a class="headerlink" href="#best-linear-projection" title="Permalink to this headline">¶</a></h4>
@@ -2067,7 +2066,17 @@ The frame.append method is deprecated and will be removed from pandas in a futur
  Text(8.0, 0, &#39;&#39;)]
 </pre></div>
 </div>
-<img alt="_images/4_heterogeneous_treatment_effect_1_51_2.png" src="_images/4_heterogeneous_treatment_effect_1_51_2.png" />
+<img alt="_images/4_heterogeneous_treatment_effect_1_56_2.png" src="_images/4_heterogeneous_treatment_effect_1_56_2.png" />
+</div>
+</div>
+<p>Note that, in this example, we got fairly large confidence intervals. This can be explained in two ways. First, as we mentioned above, there’s a data scarcity problem.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>As documented in the original paper on generalized random forests (Athey, Tibshirani and Wager, 2019), the coverage of grf confidence intervals can drop if the signal is too dense or too complex relative to the number of observations. Also, to a point, it’s possible to get tighter confidence intervals by increasing the number of trees; see this short vignette for more information.
+
+We can vary more than one variable at a time. The next snippet shows predictions and standard errors varying two variables.
+</pre></div>
+</div>
 </div>
 </div>
 <div class="cell docutils container">
@@ -2140,7 +2149,7 @@ The frame.append method is deprecated and will be removed from pandas in a futur
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Predicted treatment effect varying polviews andage (other variables fixed at median)&#39;)
 </pre></div>
 </div>
-<img alt="_images/4_heterogeneous_treatment_effect_1_53_1.png" src="_images/4_heterogeneous_treatment_effect_1_53_1.png" />
+<img alt="_images/4_heterogeneous_treatment_effect_1_60_1.png" src="_images/4_heterogeneous_treatment_effect_1_60_1.png" />
 </div>
 </div>
 </div>
@@ -2158,7 +2167,7 @@ The frame.append method is deprecated and will be removed from pandas in a futur
         requestKernel: true,
         binderOptions: {
             repo: "alexanderquispe/ml_ci_tutorial",
-            ref: "main",
+            ref: "master",
         },
         codeMirrorConfig: {
             theme: "abcdef",

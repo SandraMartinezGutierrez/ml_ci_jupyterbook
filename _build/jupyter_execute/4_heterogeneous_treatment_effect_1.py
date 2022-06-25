@@ -40,18 +40,17 @@ import matplotlib.patches as mpatches
 # Source RMD file: [link](https://docs.google.com/uc?export=download&id=1FSUi4WLfYYKnvWsNWypiQORhkqf5IlFP)
 # 
 # In the previous chapter, we learned how to estimate the effect of a binary treatment averaged over the entire population. However, the average may obscure important details about how different individuals react to the treatment. In this chapter, we will learn how to estimate the **conditional average treatment effect (CATE)**,
-# \begin{equation}
-#   (\#eq:cate)
-#   \tau(x) := \E[Y_i(1) - Y_i(0) | X_i = x],
+# 
+# \begin{equation} \label{cate}  \tag{4.1}
+#   \tau(x) := \mathbf{E}[Y_i(1) - Y_i(0) | X_i = x],
 # \end{equation}
 # which is a "localized" version of the average treatment effect conditional on a vector of observable characteristics. 
 # 
-# It's often the case that \@ref(eq:cate) is too general to be immediately useful, especially when the observable covariates are high-dimensional. It can be hard to estimate reliably without making strong modeling assumptions, and hard to summarize in a useful manner after estimation. In such situations, we will instead try to estimate treatment effect averages for simpler groups
-# \begin{equation}
-#   (\#eq:cate-g)
-#   \E[Y_i(1) - Y_i(0) | G_i = g],
+# It's often the case that \eqref{cate} is too general to be immediately useful, especially when the observable covariates are high-dimensional. It can be hard to estimate reliably without making strong modeling assumptions, and hard to summarize in a useful manner after estimation. In such situations, we will instead try to estimate treatment effect averages for simpler groups
+# \begin{equation} \label{cate-g} \tag{4.2}
+#   \mathbf{E}[Y_i(1) - Y_i(0) | G_i = g],
 # \end{equation}
-# where $G_i$ indexes subgroups of interest. Below you'll learn how to estimate and test hypotheses about pre-defined subgroups, and also how to discover subgroups of interest from the data. In this tutorial, you will learn how to use estimates of \@ref(eq:cate) to suggest relevant subgroups $G_i$ (and in the next chapters you will find out other uses of \@ref(eq:cate) in policy learning and evaluation).
+# where $G_i$ indexes subgroups of interest. Below you'll learn how to estimate and test hypotheses about pre-defined subgroups, and also how to discover subgroups of interest from the data. In this tutorial, you will learn how to use estimates of \eqref{cate} to suggest relevant subgroups $G_i$ (and in the next chapters you will find out other uses of \eqref{cate} in policy learning and evaluation).
 # 
 # We'll continue using the abridged version of the General Social Survey (GSS) [(Smith, 2016)](https://gss.norc.org/Documents/reports/project-reports/GSSProject%20report32.pdf) dataset that was introduced in the previous chapter. In this dataset, individuals were sent to treatment or control with equal probability, so we are in a randomized setting. However, many of the techniques and code shown below should also work in an observational setting provided that unconfoundedness and overlap are satisfied (these assumptions were defined in the previous chapter).
 
@@ -77,18 +76,18 @@ covariates = ["age", "polviews", "income", "educ", "marital", "sex"]
 # ## Pre-specified hypotheses
 # 
 # We will begin by learning how to test pre-specified null hypotheses of the form
-# \begin{equation}
-#   (\#eq:hte-hyp)
-#   H_{0}: \E[Y(1) - Y(0) | G_i = 1] = \E[Y(1) - Y(0) | G_i = 0].
+# 
+# \begin{equation} \label{hte-hyp} \tag{4.3}
+#   H_{0}: \mathbf{E}[Y(1) - Y(0) | G_i = 1] = \mathbf{E}[Y(1) - Y(0) | G_i = 0].
 # \end{equation}
 # 
 # That is, that the treatment effect is the same regardless of membership to some group
 # $G_i$. Importantly, for now we’ll assume that the group $G_i$ was **pre-specified** -- it was decided _before_ looking at the data.
 # 
 # In a randomized setting, if the both the treatment  $W_i$ and group membership $G_i$ are binary, we can write
-# \begin{equation}
-#   (\#eq:linear)
-#   \E[Y_i(W_i)|G_i] = \E[Y_i|W_i, G_i] = \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i
+# 
+# \begin{equation} \label{linear} \tag{4.4}
+#   \mathbf{E}[Y_i(W_i)|G_i] = \mathbf{E}[Y_i|W_i, G_i] = \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i
 # \end{equation}
 # 
 # <font size=1>
@@ -96,17 +95,17 @@ covariates = ["age", "polviews", "income", "educ", "marital", "sex"]
 # </font>
 # 
 # This allows us to write the average effects of $W_i$ and $G_i$ on $Y_i$ as
-# \begin{equation}
-#   (\#eq:decomp)
+# 
+# \begin{equation} \label{decomp} \tag{4.5}
 #   \begin{aligned}
-#     \E[Y(1) | G_i=1] &= \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i, \\
-#     \E[Y(1) | G_i=0] &= \beta_0 + \beta_w W_i,  \\
-#     \E[Y(0) | G_i=1] &= \beta_0 + \beta_g G_i,  \\
-#     \E[Y(0) | G_i=0] &= \beta_0.
+#     \mathbf{E}[Y(1) | G_i=1] &= \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i, \\
+#     \mathbf{E}[Y(1) | G_i=0] &= \beta_0 + \beta_w W_i,  \\
+#     \mathbf{E}[Y(0) | G_i=1] &= \beta_0 + \beta_g G_i,  \\
+#     \mathbf{E}[Y(0) | G_i=0] &= \beta_0.
 #   \end{aligned}
 # \end{equation}
 # 
-# Rewriting the null hypothesis \@ref(eq:hte-hyp) in terms of the decomposition \@ref(eq:decomp), we see that it boils down to a test about the coefficient in the interaction: $\beta_{xw} = 0$. Here’s an example that tests whether the treatment effect is the same for "conservative" (`polviews` < 4) and "liberal" (`polviews` $\geq$ 4) individuals.
+# Rewriting the null hypothesis \eqref{hte-hyp} in terms of the decomposition \eqref{decomp}, we see that it boils down to a test about the coefficient in the interaction: $\beta_{xw} = 0$. Here’s an example that tests whether the treatment effect is the same for "conservative" (`polviews` < 4) and "liberal" (`polviews` $\geq$ 4) individuals.
 
 # In[3]:
 
@@ -130,10 +129,11 @@ print(t_test.summary(xname=list(ols.summary2().tables[1].index)))
 # Interpret the results above. The coefficient $\beta_{xw}$ is denoted by `w:conservativeTRUE`. Can we detect a difference in treatment effect for conservative vs liberal individuals? For whom is the effect larger?
 # </font>
 # 
+# 
 # Sometimes there are many subgroups, leading to multiple hypotheses such as
-# \begin{equation}
-# (\#eq:mult-hyp)
-# H_0: \E[Y(1) - Y(0) \ | \  G_i = 1] = \E[Y(1) - Y(0) \ | \  G_i = g]
+# 
+# \begin{equation} \label{mult-hyp} \tag{4.6}
+# H_0: \mathbf{E}[Y(1) - Y(0) \ | \  G_i = 1] = \mathbf{E}[Y(1) - Y(0) \ | \  G_i = g]
 # \qquad
 # \text{for many values of }g.
 # \end{equation}
@@ -361,7 +361,7 @@ summary_rw_lm(ols, indices=interact)
 # 
 # The Bonferroni and Romano-Wolf methods control the **familywise error rate (FWER)**, which is the (asymptotic) probability of rejecting even one true null hypothesis. In other words, for a significance level $\alpha$, they guarantee that with probability $1 - \alpha$ we will make zero false discoveries. However, when the number of hypotheses being tested is very large, this criterion may be so stringent that it prevents us from being able to detect real effects. Instead, there exist alternative procedures that control the (asymptotic) **false discovery rate (FDR)**, defined as the expected proportion of true null hypotheses rejected among all hypotheses rejected. One such procedure is the Benjamini-Hochberg procedure, which is available in base R via `p.adjust(..., method="BH")`. For what remains we'll stick with FWER control, but keep in mind that FDR control can also useful in exploratory analyses or settings in which there's a very large number of hypotheses under consideration.
 # 
-# As in the previous chapter, when working with observational data under unconfoundedness and overlap, one can use AIPW scores  $\hGamma_i$ in place of the raw outcomes  $Y_i$. In the next snippet, we construct AIPW scores using the `causal_forest` function from the `grf` package.
+# As in the previous chapter, when working with observational data under unconfoundedness and overlap, one can use AIPW scores  $\hat{\Gamma}_i$ in place of the raw outcomes  $Y_i$. In the next snippet, we construct AIPW scores using the `causal_forest` function from the `grf` package.
 
 # ## Data-driven hypotheses
 # 
@@ -369,7 +369,7 @@ summary_rw_lm(ols, indices=interact)
 # 
 # ### Via causal trees
 # 
-# **Causal trees** [(Athey and Imbens)](PNAS, 2016)](https://www.pnas.org/content/pnas/113/27/7353.full.pdf) are an intuitive algorithm that is available in the randomized setting to discover subgroups with different treatment effects.
+# **Causal trees** [(Athey and Imbens)(PNAS, 2016)](https://www.pnas.org/content/pnas/113/27/7353.full.pdf) are an intuitive algorithm that is available in the randomized setting to discover subgroups with different treatment effects.
 # 
 # At a high level, the idea is to divide the sample into three subsets (not necessarily of equal size). The `splitting` subset is used to fit a decision tree whose objective is modified to maximize heterogeneity in treatment effect estimates across leaves. The `estimation` subset is then used to produce a valid estimate of the treatment effect at each leaf of the fitted tree. Finally, a `test` subset can be used to validate the tree estimates.
 # 
@@ -605,6 +605,8 @@ def cluster_causal_forest(Y,T, X, W,  cluster):
         return tau_predict
 
 
+# The next snippet computes the average treatment effect within each group defined above, i.e.,  $\mathbf{E}[Y_{i}(0)|G_{i} = g]$. This can done in two ways. First, by computing a simple difference-in-means estimate of the ATE based on observations within each group. This is valid only in randomized settings.
+
 # In[33]:
 
 
@@ -673,6 +675,8 @@ ols_ate.rename({'Coef.': 'Estimate', 'Std.Err.': 'se'}, axis=1, inplace = True)
 ols_ate
 
 
+# Another option is to average the AIPW scores within each group. This valid for both randomized settings and observational settings with unconfoundedness and overlap. Moreover, AIPW-based estimators should produce estimates with tighter confidence intervals in large samples.
+
 # In[36]:
 
 
@@ -709,6 +713,8 @@ forest_ate = forest_ate[[forest_ate.columns[i] for i in order]]
 forest_ate.rename({'Coef.': 'Estimate', 'Std.Err.': 'se'}, axis=1, inplace = True) 
 forest_ate
 
+
+# The code below plots the estimates.
 
 # In[37]:
 
@@ -803,6 +809,8 @@ forest_ate.rename({'Coef.': 'Estimate', 'Std.Err.': 'se', 'ranking': 'Comparativ
 forest_ate
 
 
+# Finally, we can also check if different groups have different average covariate levels across rankings.
+
 # In[40]:
 
 
@@ -855,6 +863,8 @@ plt.ylabel("")
 ax.set_title("Average covariate values within group (based on CATE estimate ranking)", fontsize=18, fontweight = "bold")
 (ax.set_xticklabels(["Q1", "Q2", "Q3", "Q4","Q5"], size=15))
 
+
+# Interpret the heatmap above. What describes the subgroups with strongest and weakest estimated treatment effect? Are there variables that seem to increase or decrease monotonically across rankings?
 
 # #### Best linear projection
 # 
@@ -926,6 +936,16 @@ eb1[-1][0].set_linestyle('--')
 ax.set_title(f"Predicted treatment effect varying {selected_covariate} (other variables fixed at median)",
              fontsize=11, fontweight = "bold")
 (ax.set_xticklabels(range(0,8), size=10))
+
+
+# Note that, in this example, we got fairly large confidence intervals. This can be explained in two ways. First, as we mentioned above, there’s a data scarcity problem.
+
+# In[ ]:
+
+
+As documented in the original paper on generalized random forests (Athey, Tibshirani and Wager, 2019), the coverage of grf confidence intervals can drop if the signal is too dense or too complex relative to the number of observations. Also, to a point, it’s possible to get tighter confidence intervals by increasing the number of trees; see this short vignette for more information.
+
+We can vary more than one variable at a time. The next snippet shows predictions and standard errors varying two variables.
 
 
 # In[45]:

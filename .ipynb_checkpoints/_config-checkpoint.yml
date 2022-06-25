@@ -33,7 +33,7 @@ html:
 
 repository:
   url: https://github.com/alexanderquispe/ml_ci_tutorial
-  branch: main
+  branch: master
   path_to_book: Python_tutorials
   
   
