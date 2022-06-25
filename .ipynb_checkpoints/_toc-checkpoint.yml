@@ -1,0 +1,12 @@
+format: jb-book
+root: intro
+parts:
+- caption: Topics
+  numbered: true
+  chapters:
+  - file: 1_Introduction_1
+  - file: 2_Introduction_to_Machine_Learning
+  - file: 3_average_treatment_effect_1
+  - file: 4_heterogeneous_treatment_effect_1
+  - file: 5_policy_evaluation_1
+  - file: 6_Policy_Learning_1

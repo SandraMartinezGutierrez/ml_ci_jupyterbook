@@ -1,0 +1,197 @@
+title: Machine Learning-based Causal Inference Tutorial
+author: Susan Athey
+email: alexander.quispe@pucp.edu.pe
+logo: _static/logo.jpg
+description: This tutorial will introduce key concepts in machine learning-based causal inference. This tutorial is used in the MGTECON 634 at Stanford.
+
+# parse:
+#   myst_enable_extensions:
+#     - amsmath
+#     - colon_fence
+#     - deflist
+#     - dollarmath
+#     - html_admonition
+#     - html_image
+#     - linkify
+#     - replacements
+#     - smartquotes
+#     - substitution
+
+# only_build_toc_files: true
+execute:
+  execute_notebooks: "cache"
+  timeout: 900
+  
+# bibtex_bibfiles:
+#    - _static/quant-econ.bib
+
+html:
+  # baseurl: https://python.quantecon.org/
+  use_edit_page_button: true
+  use_repository_button: true
+  use_issues_button: true
+
+repository:
+  url: https://github.com/alexanderquispe/ml_ci_tutorial
+  branch: master
+  path_to_book: Python_tutorials
+  
+  
+# Launch button settings
+launch_buttons:
+ binder             : false
+ binderhub          : false
+ binderhub_url      : off
+ jupyterhub         : false
+ thebe              : false
+ colab              : false
+
+# Launch button settings
+launch_buttons:
+  notebook_interface: classic #jupyterlab
+  binderhub_url: https://mybinder.org
+  colab_url: https://colab.research.google.com
+  thebe: true
+
+# launch_buttons:
+#   notebook_interface: "classic" # The interface interactive links will activate ["classic", "jupyterlab"]
+#   binderhub_url: "https://mybinder.org"
+#   colab_url: "https://colab.research.google.com"
+#   thebe: true
+
+
+# parse:
+#   myst_substitutions:
+#       sub3: My _global_ value!
+#   myst_enable_extensions:  # default extensions to enable in the myst parser. See https://myst-parser.readthedocs.io/en/latest/using/syntax-optional.html
+#     - amsmath
+#     - colon_fence
+#     - deflist
+#     - dollarmath
+#     - html_admonition
+#     - html_image
+#     - linkify
+#     - replacements
+#     - smartquotes
+#     - substitution
+    
+latex:
+  latex_engine                : "pdflatex"
+  use_jupyterbook_latex       : true # use jupyterbook-latex for pdf builds as default
+  latex_documents:
+      targetname: MGTECON_634-python.tex
+
+   
+    
+# sphinx:
+#   extra_extensions: [sphinx_multitoc_numbering, sphinxext.rediraffe, sphinx_tojupyter, sphinxcontrib.youtube, sphinx.ext.todo, sphinx_exercise, sphinx_togglebutton]
+#   config:
+#     nb_render_priority:
+#       html:
+#       - "application/vnd.jupyter.widget-view+json"
+#       - "application/javascript"
+#       - "text/html"
+#       - "text/latex"
+#       - "image/svg+xml"
+#       - "image/png"
+#       - "image/jpeg"
+#       - "text/markdown"
+#       - "text/plain"
+#       jupyter:
+#       - "application/vnd.jupyter.widget-view+json"
+#       - "application/javascript"
+#       - "text/html"
+#       - "text/latex"
+#       - "image/svg+xml"
+#       - "image/png"
+#       - "image/jpeg"
+#       - "text/markdown"
+#       - "text/plain"
+#     html_favicon: _static/lectures-favicon.ico
+#     html_theme: quantecon_book_theme
+#     html_static_path: ['_static']
+#     html_theme_options:
+#       header_organisation_url: https://github.com/alexanderquispe
+#       header_organisation: https://pbs.twimg.com/profile_images/1179997801343668225/KwrUZF5-_400x400.jpg
+#       repository_url: https://github.com/alexanderquispe/ml_ci_tutorial/blob/main/Python_tutorials/
+#       nb_repository_url: https://github.com/alexanderquispe/ml_ci_tutorial/blob/main/Python_tutorials/
+#       twitter: Alex_QR_CG
+#       # twitter_logo_url: https://assets.quantecon.org/img/qe-twitter-logo.png
+#       og_logo_url: https://pbs.twimg.com/profile_images/1179997801343668225/KwrUZF5-_400x400.jpg-
+#       description: This tutorial will introduce key concepts in machine learning-based causal inference. This tutorial is used in the MGTECON 634 at Stanford.
+#       # keywords: Python, QuantEcon, Quantitative Economics, Economics, Sloan, Alfred P. Sloan Foundation, Tom J. Sargent, John Stachurski
+#       google_analytics_id: UA-54984338-10
+#       launch_buttons:
+#         notebook_interface        : classic  # The interface interactive links will activate ["classic", "jupyterlab"]
+#         binderhub_url             : https://mybinder.org  # The URL of the BinderHub (e.g., https://mybinder.org)
+#         colab_url                 : https://colab.research.google.com
+#         thebe                     : false  # Add a thebe button to pages (requires the repository to run on Binder)
+#     mathjax_path: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js
+#     rediraffe_redirects:
+#       index_toc.md: intro.md
+#     tojupyter_static_file_path: ["source/_static", "_static"]
+#     tojupyter_target_html: true
+#     tojupyter_urlpath: "https://python-programming.quantecon.org/"
+#     tojupyter_image_urlpath: "https://python-programming.quantecon.org/_static/"
+#     tojupyter_lang_synonyms: ["ipython", "ipython3", "python"]
+#     tojupyter_kernels:
+#       python3:
+#         kernelspec:
+#           display_name: "Python"
+#           language: python3
+#           name: python3
+#         file_extension: ".py"
+#     tojupyter_images_markdown: true
+      
+      
+      
+      
+      
+      
+      
+      
+# #       launch_buttons:
+# #         colab_url                 : https://colab.research.google.com
+# #     mathjax3_config:
+# #       tex:
+# #         macros:
+# #           "argmax" : "arg\\,max"
+# #           "argmin" : "arg\\,min"
+# #     mathjax_path: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js
+# #     rediraffe_redirects:
+# #       index_toc.md: intro.md
+# #     tojupyter_static_file_path: ["source/_static", "_static"]
+# #     tojupyter_target_html: true
+# #     # tojupyter_urlpath: "https://python.quantecon.org/"
+# #     # tojupyter_image_urlpath: "https://python.quantecon.org/_static/"
+# #     tojupyter_lang_synonyms: ["ipython", "ipython3", "python"]
+# #     tojupyter_kernels:
+# #       python3:
+# #         kernelspec:
+# #           display_name: "Python"
+# #           language: python3
+# #           name: python3
+# #         file_extension: ".py"
+# #     tojupyter_images_markdown: true
+
+
+
+
+
+# Interact link settings
+notebook_interface            : "notebook"
+
+
+
+    
+sphinx:
+  config:
+    html_show_copyright: false
+    latex_toplevel_sectioning: 'section'
+#    latex_show_urls: 'footnote'
+    latex_elements.papersize: a4paper
+    latex_elements.pointsize: 12pt
+    
+
+google_analytics:
+  mytrackingcode: UA-205698170-1
