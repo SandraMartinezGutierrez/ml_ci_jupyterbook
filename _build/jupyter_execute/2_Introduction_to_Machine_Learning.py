@@ -981,12 +981,6 @@ tree1 = dt.fit(x_train,y_train)
 # In[135]:
 
 
-{
-    "tags": [
-        "output_scroll",
-    ]
-}
-
 from sklearn import tree
 plt.figure(figsize=(18,5))
 tree.plot_tree(dt)

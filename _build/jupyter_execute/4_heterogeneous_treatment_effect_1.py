@@ -108,7 +108,7 @@ covariates = ["age", "polviews", "income", "educ", "marital", "sex"]
 #   \end{aligned}
 # $$ (decomp)
 # 
-# Rewriting the null hypothesis {eq}`hte-hyp`} in terms of the decomposition {eq}`decomp`, we see that it boils down to a test about the coefficient in the interaction: $\beta_{xw} = 0$. Here’s an example that tests whether the treatment effect is the same for "conservative" (`polviews` < 4) and "liberal" (`polviews` $\geq$ 4) individuals.
+# Rewriting the null hypothesis {eq}`hte-hyp` in terms of the decomposition {eq}`decomp`, we see that it boils down to a test about the coefficient in the interaction: $\beta_{xw} = 0$. Here’s an example that tests whether the treatment effect is the same for "conservative" (`polviews` < 4) and "liberal" (`polviews` $\geq$ 4) individuals.
 
 # In[3]:
 

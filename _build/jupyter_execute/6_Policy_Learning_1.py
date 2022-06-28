@@ -67,7 +67,7 @@ data.head(4)
 # 
 # $$
 #   \tau(x) := \mathop{\mathrm{E}}[Y_i(1) - Y_i(0) | X_i = x],
-# $$ cate
+# $$ (cate)
 # 
 # that is, the average effect of a binary treatment conditional on observable charateristics. If we knew {eq}`cate`, then a natural policy would be to assigns individuals to treatment their CATE is positive,
 # 
@@ -88,9 +88,6 @@ data.head(4)
 # $$
 # 
 # replacing the zero threshold by some appropriate cost function if needed.
-# 
-# 
-# <!-- $$\widehat{\tau}$$ -->
 # 
 # Once we have an estimated policy, we need to estimate its value. To obtain accurate estimates, we must ensure appropriate **data-splitting**. We cannot estimate and evaluate a policy using the same data set, because that would lead to an overestimate of the value of the policy. One option here is to divide the data into training and test subsets, fit $\widehat{\tau}(\cdot)$ in the training subset and evaluate it in the test subset. This is analogous to what we saw in prediction problems: if we try to evaluate our predictions on the training set, we will overestimate how good our predictions are. 
 # 
