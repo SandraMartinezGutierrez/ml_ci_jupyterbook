@@ -407,15 +407,17 @@ const thebe_selector_output = ".output, .cell_output"
 <h1><span class="section-number">4. </span>HTE I: Binary treatment<a class="headerlink" href="#hte-i-binary-treatment" title="Permalink to this headline">¶</a></h1>
 <p>Source RMD file: <a class="reference external" href="https://docs.google.com/uc?export=download&amp;id=1FSUi4WLfYYKnvWsNWypiQORhkqf5IlFP">link</a></p>
 <p>In the previous chapter, we learned how to estimate the effect of a binary treatment averaged over the entire population. However, the average may obscure important details about how different individuals react to the treatment. In this chapter, we will learn how to estimate the <strong>conditional average treatment effect (CATE)</strong>,</p>
-<p>\begin{equation} \label{cate}  \tag{4.1}
-\tau(x) := \mathbf{E}[Y_i(1) - Y_i(0) | X_i = x],
-\end{equation}
-which is a “localized” version of the average treatment effect conditional on a vector of observable characteristics.</p>
-<p>It’s often the case that \eqref{cate} is too general to be immediately useful, especially when the observable covariates are high-dimensional. It can be hard to estimate reliably without making strong modeling assumptions, and hard to summarize in a useful manner after estimation. In such situations, we will instead try to estimate treatment effect averages for simpler groups
-\begin{equation} \label{cate-g} \tag{4.2}
-\mathbf{E}[Y_i(1) - Y_i(0) | G_i = g],
-\end{equation}
-where <span class="math notranslate nohighlight">\(G_i\)</span> indexes subgroups of interest. Below you’ll learn how to estimate and test hypotheses about pre-defined subgroups, and also how to discover subgroups of interest from the data. In this tutorial, you will learn how to use estimates of \eqref{cate} to suggest relevant subgroups <span class="math notranslate nohighlight">\(G_i\)</span> (and in the next chapters you will find out other uses of \eqref{cate} in policy learning and evaluation).</p>
+<div class="math notranslate nohighlight" id="equation-cate">
+<span class="eqno">(4.1)<a class="headerlink" href="#equation-cate" title="Permalink to this equation">¶</a></span>\[
+  \tau(x) := \mathbf{E}[Y_i(1) - Y_i(0) | X_i = x],
+\]</div>
+<p>which is a “localized” version of the average treatment effect conditional on a vector of observable characteristics.</p>
+<p>It’s often the case that <a class="reference internal" href="#equation-cate">(4.1)</a> is too general to be immediately useful, especially when the observable covariates are high-dimensional. It can be hard to estimate reliably without making strong modeling assumptions, and hard to summarize in a useful manner after estimation. In such situations, we will instead try to estimate treatment effect averages for simpler groups</p>
+<div class="math notranslate nohighlight" id="equation-cate-g">
+<span class="eqno">(4.2)<a class="headerlink" href="#equation-cate-g" title="Permalink to this equation">¶</a></span>\[
+  \mathbf{E}[Y_i(1) - Y_i(0) | G_i = g],
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(G_i\)</span> indexes subgroups of interest. Below you’ll learn how to estimate and test hypotheses about pre-defined subgroups, and also how to discover subgroups of interest from the data. In this tutorial, you will learn how to use estimates of <a class="reference internal" href="#equation-cate">(4.1)</a> to suggest relevant subgroups <span class="math notranslate nohighlight">\(G_i\)</span> (and in the next chapters you will find out other uses of <a class="reference internal" href="#equation-cate">(4.1)</a> in policy learning and evaluation).</p>
 <p>We’ll continue using the abridged version of the General Social Survey (GSS) <a class="reference external" href="https://gss.norc.org/Documents/reports/project-reports/GSSProject%20report32.pdf">(Smith, 2016)</a> dataset that was introduced in the previous chapter. In this dataset, individuals were sent to treatment or control with equal probability, so we are in a randomized setting. However, many of the techniques and code shown below should also work in an observational setting provided that unconfoundedness and overlap are satisfied (these assumptions were defined in the previous chapter).</p>
 <p>As with other chapters in this tutorial, the code below should still work by replacing the next snippet of code with a different dataset, provided that you update the key variables <code class="docutils literal notranslate"><span class="pre">treatment</span></code>, <code class="docutils literal notranslate"><span class="pre">outcome</span></code>, and <code class="docutils literal notranslate"><span class="pre">covariates</span></code> below. Also, please make sure to read the comments as they may be subtle differences depending on whether your dataset was created in a randomized or observational setting.</p>
 <div class="cell docutils container">
@@ -439,28 +441,31 @@ where <span class="math notranslate nohighlight">\(G_i\)</span> indexes subgroup
 <div class="section" id="pre-specified-hypotheses">
 <h2><span class="section-number">4.1. </span>Pre-specified hypotheses<a class="headerlink" href="#pre-specified-hypotheses" title="Permalink to this headline">¶</a></h2>
 <p>We will begin by learning how to test pre-specified null hypotheses of the form</p>
-<p>\begin{equation} \label{hte-hyp} \tag{4.3}
-H_{0}: \mathbf{E}[Y(1) - Y(0) | G_i = 1] = \mathbf{E}[Y(1) - Y(0) | G_i = 0].
-\end{equation}</p>
+<div class="math notranslate nohighlight" id="equation-hte-hyp">
+<span class="eqno">(4.3)<a class="headerlink" href="#equation-hte-hyp" title="Permalink to this equation">¶</a></span>\[
+  H_{0}: \mathbf{E}[Y(1) - Y(0) | G_i = 1] = \mathbf{E}[Y(1) - Y(0) | G_i = 0].
+\]</div>
 <p>That is, that the treatment effect is the same regardless of membership to some group
 <span class="math notranslate nohighlight">\(G_i\)</span>. Importantly, for now we’ll assume that the group <span class="math notranslate nohighlight">\(G_i\)</span> was <strong>pre-specified</strong> – it was decided <em>before</em> looking at the data.</p>
 <p>In a randomized setting, if the both the treatment  <span class="math notranslate nohighlight">\(W_i\)</span> and group membership <span class="math notranslate nohighlight">\(G_i\)</span> are binary, we can write</p>
-<p>\begin{equation} \label{linear} \tag{4.4}
-\mathbf{E}[Y_i(W_i)|G_i] = \mathbf{E}[Y_i|W_i, G_i] = \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i
-\end{equation}</p>
+<div class="math notranslate nohighlight" id="equation-linear">
+<span class="eqno">(4.4)<a class="headerlink" href="#equation-linear" title="Permalink to this equation">¶</a></span>\[
+  \mathbf{E}[Y_i(W_i)|G_i] = \mathbf{E}[Y_i|W_i, G_i] = \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i
+\]</div>
 <font size=1>
 When $W_i$ and $G_i$ are binary, this decomposition is true without loss of generality. Why?
 </font>
 <p>This allows us to write the average effects of <span class="math notranslate nohighlight">\(W_i\)</span> and <span class="math notranslate nohighlight">\(G_i\)</span> on <span class="math notranslate nohighlight">\(Y_i\)</span> as</p>
-<p>\begin{equation} \label{decomp} \tag{4.5}
-\begin{aligned}
-\mathbf{E}[Y(1) | G_i=1] &amp;= \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i, \
-\mathbf{E}[Y(1) | G_i=0] &amp;= \beta_0 + \beta_w W_i,  \
-\mathbf{E}[Y(0) | G_i=1] &amp;= \beta_0 + \beta_g G_i,  \
-\mathbf{E}[Y(0) | G_i=0] &amp;= \beta_0.
-\end{aligned}
-\end{equation}</p>
-<p>Rewriting the null hypothesis \eqref{hte-hyp} in terms of the decomposition \eqref{decomp}, we see that it boils down to a test about the coefficient in the interaction: <span class="math notranslate nohighlight">\(\beta_{xw} = 0\)</span>. Here’s an example that tests whether the treatment effect is the same for “conservative” (<code class="docutils literal notranslate"><span class="pre">polviews</span></code> &lt; 4) and “liberal” (<code class="docutils literal notranslate"><span class="pre">polviews</span></code> <span class="math notranslate nohighlight">\(\geq\)</span> 4) individuals.</p>
+<div class="math notranslate nohighlight" id="equation-decomp">
+<span class="eqno">(4.5)<a class="headerlink" href="#equation-decomp" title="Permalink to this equation">¶</a></span>\[\begin{split}
+  \begin{aligned}
+    \mathbf{E}[Y(1) | G_i=1] &amp;= \beta_0 + \beta_w W_i + \beta_g G_i + \beta_{wg} W_i G_i, \\
+    \mathbf{E}[Y(1) | G_i=0] &amp;= \beta_0 + \beta_w W_i,  \\
+    \mathbf{E}[Y(0) | G_i=1] &amp;= \beta_0 + \beta_g G_i,  \\
+    \mathbf{E}[Y(0) | G_i=0] &amp;= \beta_0.
+  \end{aligned}
+\end{split}\]</div>
+<p>Rewriting the null hypothesis <a class="reference internal" href="#equation-hte-hyp">(4.3)</a>} in terms of the decomposition <a class="reference internal" href="#equation-decomp">(4.5)</a>, we see that it boils down to a test about the coefficient in the interaction: <span class="math notranslate nohighlight">\(\beta_{xw} = 0\)</span>. Here’s an example that tests whether the treatment effect is the same for “conservative” (<code class="docutils literal notranslate"><span class="pre">polviews</span></code> &lt; 4) and “liberal” (<code class="docutils literal notranslate"><span class="pre">polviews</span></code> <span class="math notranslate nohighlight">\(\geq\)</span> 4) individuals.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Only valid in randomized settings</span>
@@ -497,11 +502,12 @@ w:conservative     0.1160      0.010     11.185      0.000       0.096       0.1
 Interpret the results above. The coefficient $\beta_{xw}$ is denoted by `w:conservativeTRUE`. Can we detect a difference in treatment effect for conservative vs liberal individuals? For whom is the effect larger?
 </font>
 <p>Sometimes there are many subgroups, leading to multiple hypotheses such as</p>
-<p>\begin{equation} \label{mult-hyp} \tag{4.6}
+<div class="math notranslate nohighlight" id="equation-mult-hyp">
+<span class="eqno">(4.6)<a class="headerlink" href="#equation-mult-hyp" title="Permalink to this equation">¶</a></span>\[
 H_0: \mathbf{E}[Y(1) - Y(0) \ | \  G_i = 1] = \mathbf{E}[Y(1) - Y(0) \ | \  G_i = g]
 \qquad
 \text{for many values of }g.
-\end{equation}</p>
+\]</div>
 <p>In that case, we need to correct for the fact that we are testing for multiple hypotheses, or we will end up with many false positives. The <strong>Bonferroni correction</strong> <a class="reference external" href="https://en.wikipedia.org/wiki/Bonferroni_correction">(wiki)</a> is a common method for dealing with multiple hypothesis testing, though it is often too conservative to be useful. It is available via the function <code class="docutils literal notranslate"><span class="pre">p.adjust</span></code> from base <code class="docutils literal notranslate"><span class="pre">R</span></code>. The next snippet of code tests whether the treatment effect at each level of <code class="docutils literal notranslate"><span class="pre">polviews</span></code> is different from the treatment effect from <code class="docutils literal notranslate"><span class="pre">polviews</span></code> equals one.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

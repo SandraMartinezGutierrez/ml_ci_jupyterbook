@@ -4,18 +4,18 @@ email: alexander.quispe@pucp.edu.pe
 logo: _static/logo.jpg
 description: This tutorial will introduce key concepts in machine learning-based causal inference. This tutorial is used in the MGTECON 634 at Stanford.
 
-# parse:
-#   myst_enable_extensions:
-#     - amsmath
-#     - colon_fence
-#     - deflist
-#     - dollarmath
-#     - html_admonition
-#     - html_image
-#     - linkify
-#     - replacements
-#     - smartquotes
-#     - substitution
+parse:
+  myst_enable_extensions:
+    - amsmath
+    - colon_fence
+    - deflist
+    - dollarmath
+    - html_admonition
+    - html_image
+    - linkify
+    - replacements
+    - smartquotes
+    - substitution
 
 # only_build_toc_files: true
 execute:
@@ -191,6 +191,7 @@ sphinx:
 #    latex_show_urls: 'footnote'
     latex_elements.papersize: a4paper
     latex_elements.pointsize: 12pt
+    # mathjax_path: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.jss
     
 
 google_analytics:
